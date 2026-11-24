@@ -9,6 +9,8 @@
 !docker-compose.yml
 !vercel.json
 !.vercelignore
+!api/
+!api/*
 !api-config.js
 !run.ps1
 !run.sh
