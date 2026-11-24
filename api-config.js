@@ -206,40 +206,62 @@
       // Check health of backend if set
       if (base) {
         const badge = document.getElementById('backend-health-badge');
-        const ctrl = new AbortController();
-        const tid = setTimeout(() => ctrl.abort(), 7000);
-        origFetch(base + '/healthz', { signal: ctrl.signal, cache: 'no-store' })
-          .then(async function (res) {
-            clearTimeout(tid);
-            if (res.ok) {
-              if (badge) {
-                badge.textContent = '● Online';
-                badge.style.color = '#d4fb58';
-                badge.style.background = '#1b381a';
+        let attempts = 0;
+        function checkHealth() {
+          attempts++;
+          const ctrl = new AbortController();
+          const tid = setTimeout(() => ctrl.abort(), 25000);
+          origFetch(base + '/healthz', { signal: ctrl.signal, cache: 'no-store' })
+            .then(async function (res) {
+              clearTimeout(tid);
+              if (res.ok) {
+                if (badge) {
+                  badge.textContent = '● Online';
+                  badge.style.color = '#d4fb58';
+                  badge.style.background = '#1b381a';
+                  badge.title = 'Backend is connected and healthy';
+                }
+              } else if (res.status === 503) {
+                if (badge) {
+                  badge.textContent = '● Suspended (503)';
+                  badge.style.color = '#ff6b6b';
+                  badge.style.background = '#3d1616';
+                  badge.title = 'Service suspended on Render. Resume it in your Render dashboard.';
+                }
+              } else if (res.status === 502 || res.status === 504) {
+                if (badge) {
+                  badge.textContent = '● Waking up…';
+                  badge.style.color = '#ffa500';
+                  badge.style.background = '#3d2f16';
+                  badge.title = 'Render is spinning up container';
+                  if (attempts < 6) setTimeout(checkHealth, 3500);
+                }
+              } else {
+                if (badge) {
+                  badge.textContent = '● Error ' + res.status;
+                  badge.style.color = '#ffa500';
+                }
               }
-            } else if (res.status === 503) {
+            })
+            .catch(function (err) {
+              clearTimeout(tid);
               if (badge) {
-                badge.textContent = '● Suspended (503)';
-                badge.style.color = '#ff6b6b';
-                badge.style.background = '#3d1616';
-                badge.title = 'Service suspended on Render. Unsuspend it in your Render dashboard.';
+                if (attempts < 4) {
+                  badge.textContent = '● Connecting (waking up)…';
+                  badge.style.color = '#ffa500';
+                  badge.style.background = '#3d2f16';
+                  badge.title = 'Connecting to Render backend…';
+                  setTimeout(checkHealth, 4000);
+                } else {
+                  badge.textContent = '● Offline / Sleep';
+                  badge.style.color = '#ff6b6b';
+                  badge.style.background = '#3d1616';
+                  badge.title = err.message || 'Cannot reach backend';
+                }
               }
-            } else {
-              if (badge) {
-                badge.textContent = '● Error ' + res.status;
-                badge.style.color = '#ffa500';
-              }
-            }
-          })
-          .catch(function (err) {
-            clearTimeout(tid);
-            if (badge) {
-              badge.textContent = '● Offline / Unreachable';
-              badge.style.color = '#ff6b6b';
-              badge.style.background = '#3d1616';
-              badge.title = err.message || 'Cannot connect to backend';
-            }
-          });
+            });
+        }
+        checkHealth();
       }
     };
 
