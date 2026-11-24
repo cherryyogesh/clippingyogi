@@ -4,6 +4,9 @@
 !LICENSE
 !README.md
 !requirements.txt
+!Dockerfile
+!.dockerignore
+!docker-compose.yml
 !run.ps1
 !run.sh
 !*.py

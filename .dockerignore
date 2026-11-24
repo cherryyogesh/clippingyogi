@@ -1,0 +1,13 @@
+.git
+.venv
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+*.log
+data/*
+!data/.keep
+.github
+tests
+docs/*.pdf
+docs/*.mp4
