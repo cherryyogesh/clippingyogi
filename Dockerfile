@@ -7,9 +7,10 @@ ENV DEBIAN_FRONTEND=noninteractive \
     PORT=8770 \
     CLIPPING_YOGI_DATA_DIR=/app/data
 
-# Install system dependencies: FFmpeg and libraries required by OpenCV & media processing
+# Install system dependencies: FFmpeg, Node.js (for YouTube JS extraction) and libraries required by OpenCV & media processing
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ffmpeg \
+    nodejs \
     libsm6 \
     libxext6 \
     libgl1 \

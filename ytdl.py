@@ -48,7 +48,7 @@ def update_ytdlp(force=False):
 update_ytdlp()          # must run before yt_dlp is imported so the new version is the one that loads
 import yt_dlp
 
-BLOCK_MARKERS = ('not a bot', 'sign in to confirm', 'cookies-from-browser', 'http error 403', 'http error 429', 'too many requests')
+BLOCK_MARKERS = ('not a bot', 'sign in to confirm', 'cookies-from-browser', 'http error 403', 'http error 429', 'too many requests', 'failed to extract any player response', 'player response', 'requested format is not available')
 
 def is_blocked(error):
     text = str(error).lower()
@@ -86,7 +86,7 @@ def variants(base):
     if browser:
         out.append(({**base, 'cookiesfrombrowser': (browser,)}, False))
     out.append((dict(base), True))
-    for clients in (['tv', 'web_safari'], ['ios'], ['mweb']):
+    for clients in (['tv', 'web_safari'], ['android'], ['ios'], ['mweb']):
         out.append(({**base, 'extractor_args': {'youtube': {'player_client': clients}}}, False))
     return out
 
