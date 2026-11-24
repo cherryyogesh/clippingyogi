@@ -24,6 +24,22 @@
 
   let base = (stored || (isVercel ? DEFAULT_BACKEND : '')).replace(/\/+$/, '');
 
+  // Fetch backend URL configured in Vercel environment variables (if any)
+  if (isVercel && !stored) {
+    origFetch('/api/config')
+      .then(r => r.ok ? r.json() : null)
+      .then(cfg => {
+        if (cfg && cfg.backend && cfg.backend !== base) {
+          base = cfg.backend.trim().replace(/\/+$/, '');
+          const input = document.getElementById('backend-url-input');
+          if (input) input.value = base;
+          const code = document.getElementById('backend-status-code');
+          if (code) code.textContent = base;
+        }
+      })
+      .catch(() => {});
+  }
+
   window.getApiBase = function () { return base; };
   window.setApiBase = function (url) {
     base = url ? url.trim().replace(/\/+$/, '') : '';
