@@ -7,6 +7,9 @@
 !Dockerfile
 !.dockerignore
 !docker-compose.yml
+!vercel.json
+!.vercelignore
+!api-config.js
 !run.ps1
 !run.sh
 !*.py

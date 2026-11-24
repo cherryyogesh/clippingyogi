@@ -1,0 +1,13 @@
+requirements.txt
+*.py
+.venv
+Dockerfile
+.dockerignore
+docker-compose.yml
+run.ps1
+run.sh
+*.bat
+docs/*.pdf
+docs/*.mp4
+tests
+data
