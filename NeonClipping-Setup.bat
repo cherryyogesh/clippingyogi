@@ -1,8 +1,8 @@
 @echo off
 setlocal
-title NeonClipping Setup
+title Clipping Yogi Setup
 echo.
-echo   NeonClipping setup shuru ho raha hai (internet chahiye)...
+echo   Clipping Yogi setup shuru ho raha hai (internet chahiye)...
 echo   Ye file sirf install.ps1 laakar chalati hai. Padhna ho to Notepad mein kholo.
 echo.
 set "F=%~dp0install.ps1"

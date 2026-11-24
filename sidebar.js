@@ -59,16 +59,16 @@
           (a.count ? 'Free ' + gb(a.bytes) + ' (' + a.count + ')' : 'Nothing to clean') + '</button></div>';
       }).join('');
       $('sd-body').innerHTML =
-        '<div class="sd-summary"><div><b>' + gb(s.total) + '</b><small>used by NeonClipping</small></div><div><b>' + gb(s.free) + '</b><small>free on this drive</small></div>' +
+        '<div class="sd-summary"><div><b>' + gb(s.total) + '</b><small>used by Clipping Yogi</small></div><div><b>' + gb(s.free) + '</b><small>free on this drive</small></div>' +
         '<div><b>' + s.clips.count + ' clips</b><small>' + gb(s.clips.bytes) + '</small></div><div><b>' + gb(s.models) + '</b><small>AI models</small></div></div>' +
         (s.busy ? '<p class="sd-warn">A job is running. Clean-up is paused until it finishes.</p>' : '') +
         rows +
         '<div class="sd-row"><div><b>Delete old clips</b><small>Removes finished clips (video, captions, cover) older than the days you choose. This cannot be undone. Download the ones you want first.</small></div>' +
         '<div class="sd-inline"><input type="number" id="sd-days" min="1" max="3650" value="30" aria-label="Days"><span>days</span><button type="button" class="mini-btn warn" id="sd-old">Check</button></div></div>' +
         '<div class="sd-row"><div><b>Open the folder</b><small>Show your clips and downloads in the file explorer.</small></div><button type="button" class="mini-btn" id="sd-open">Open folder</button></div>' +
-        '<div class="sd-folder"><b>Where NeonClipping saves its files</b><small id="sd-current">' + esc(s.folder) + (s.configured ? '' : ' (default)') + '</small>' +
-        '<div class="sd-inline"><input type="text" id="sd-path" placeholder="D:\\NeonClippingData" value="' + esc(s.configured || '') + '" aria-label="Data folder"><button type="button" class="mini-btn" id="sd-folder-save">Save and restart</button></div>' +
-        '<small>Use a drive with more free space. NeonClipping restarts to use it. Files already saved stay in the old folder, so delete them above first or copy that folder yourself. Leave empty to go back to the default.</small></div>' +
+        '<div class="sd-folder"><b>Where Clipping Yogi saves its files</b><small id="sd-current">' + esc(s.folder) + (s.configured ? '' : ' (default)') + '</small>' +
+        '<div class="sd-inline"><input type="text" id="sd-path" placeholder="D:\\ClippingYogiData" value="' + esc(s.configured || '') + '" aria-label="Data folder"><button type="button" class="mini-btn" id="sd-folder-save">Save and restart</button></div>' +
+        '<small>Use a drive with more free space. Clipping Yogi restarts to use it. Files already saved stay in the old folder, so delete them above first or copy that folder yourself. Leave empty to go back to the default.</small></div>' +
         '<p id="sd-msg" class="sd-msg" role="status"></p>';
     }
 
@@ -104,7 +104,7 @@
       if (e.target.id === 'sd-folder-save') {
         try {
           const path = $('sd-path').value.trim();
-          if (!confirm(path ? 'Save new files in ' + path + ' and restart NeonClipping now?' : 'Go back to the default folder and restart NeonClipping now?')) return;
+          if (!confirm(path ? 'Save new files in ' + path + ' and restart Clipping Yogi now?' : 'Go back to the default folder and restart Clipping Yogi now?')) return;
           await api('/storage/folder', { path, restart: true });
           msg('Restarting… this page reloads by itself.');
           for (let i = 0; i < 90; i++) {
@@ -118,42 +118,6 @@
     window.__storageLine = line;
     setInterval(() => { if (!document.hidden && !dlg.open) line(); }, 60000);
 
-    // ---- Version card: current version and a one-click update check
-    const ver = document.createElement('button');
-    ver.type = 'button';
-    ver.id = 'side-version';
-    ver.className = 'side-card';
-    ver.innerHTML = '<span class="sc-title">⟳ Updates</span><span class="sc-line" id="side-version-line">checking…</span>';
-    (card.after ? card : side).after(ver);
-    async function versionLine(force) {
-      try {
-        const u = await api('/update/status');
-        const line = $('side-version-line');
-        if (u.checkout) line.textContent = 'Developer copy (update with git)';
-        else if (u.available) { line.textContent = 'New version ready'; ver.classList.add('low'); }
-        else line.textContent = 'Up to date' + (u.current ? ' · ' + u.current : '');
-      } catch (e) { $('side-version-line').textContent = 'Could not check'; }
-    }
-    ver.onclick = () => { const bar = $('update-bar'); if (bar && !bar.hidden) bar.scrollIntoView({ block: 'center', behavior: 'smooth' }); else versionLine(); };
-    versionLine();
-
-    // ---- Supporters as a small toggle
-    const sup = $('supporters');
-    if (sup) {
-      const toggle = document.createElement('button');
-      toggle.type = 'button';
-      toggle.className = 'side-toggle';
-      sup.before(toggle);
-      sup.classList.add('collapsed');
-      const label = () => {
-        const n = sup.querySelectorAll('.supporter').length;
-        toggle.innerHTML = '<span>♥ Supporters' + (n ? ' (' + n + ')' : '') + '</span><span class="chev">' + (sup.classList.contains('collapsed') ? '▸' : '▾') + '</span>';
-        toggle.hidden = sup.hidden;
-      };
-      toggle.onclick = () => { sup.classList.toggle('collapsed'); label(); };
-      new MutationObserver(label).observe(sup, { attributes: true, attributeFilter: ['hidden'], childList: true, subtree: true });
-      label();
-    }
   }
   if (document.readyState === 'complete') setTimeout(init, 400);
   else window.addEventListener('load', () => setTimeout(init, 400));

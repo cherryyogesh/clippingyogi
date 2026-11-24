@@ -1,7 +1,7 @@
 // "Report a problem" (English + Hindi). Everything here is user-triggered; see report.py for what is removed from the text.
 (() => {
   const css = `
-  #rp-btn{position:fixed;right:14px;bottom:14px;z-index:60;background:var(--panel,#171320);color:var(--white,#fbf6ff);border:1px solid var(--line,#30263e);border-radius:999px;padding:9px 14px;font:600 13px system-ui,sans-serif;cursor:pointer;box-shadow:0 4px 18px #0008}
+  #rp-btn{display:none!important}
   #rp-btn:hover{border-color:var(--pink,#ff4ba5)}
   #rp-dlg{width:min(720px,94vw);max-height:90vh;overflow:auto;background:var(--panel,#171320);color:var(--white,#fbf6ff);border:1px solid var(--pink,#ff4ba5);border-radius:16px;padding:20px 22px;font:14px/1.5 system-ui,sans-serif}
   #rp-dlg::backdrop{background:#000a}
@@ -54,8 +54,8 @@
       hi('यही जानकारी एक फ़ाइल में सेव होती है। इसे आप खुद भेजें (GitHub, Instagram DM, WhatsApp)। जब तक आप शेयर नहीं करते, लॉग आपके कंप्यूटर पर ही रहता है।'),
       dlA),
     card('', '3 · Send directly to the developer (optional)', '3 · सीधे डेवलपर को भेजें (वैकल्पिक)',
-      en('If you want a fix quickly, send the text below straight to me. Only technical details: versions and error messages. No personal data, no videos, no links. Used only to fix NeonClipping. If you prefer not to, use option 1 or 2.'),
-      hi('अगर जल्दी समाधान चाहिए तो नीचे का टेक्स्ट सीधे मुझे भेजें। सिर्फ़ तकनीकी जानकारी: वर्शन और एरर संदेश। कोई निजी डेटा, वीडियो या लिंक नहीं। सिर्फ़ NeonClipping ठीक करने के लिए। नहीं भेजना चाहते तो ऊपर का विकल्प 1 या 2 चुनें।'),
+      en('If you want a fix quickly, send the text below straight to me. Only technical details: versions and error messages. No personal data, no videos, no links. Used only to fix Clipping Yogi. If you prefer not to, use option 1 or 2.'),
+      hi('अगर जल्दी समाधान चाहिए तो नीचे का टेक्स्ट सीधे मुझे भेजें। सिर्फ़ तकनीकी जानकारी: वर्शन और एरर संदेश। कोई निजी डेटा, वीडियो या लिंक नहीं। सिर्फ़ Clipping Yogi ठीक करने के लिए। नहीं भेजना चाहते तो ऊपर का विकल्प 1 या 2 चुनें।'),
       diag,
       el('label', { className: 'rp-c' }, consent, el('span', { textContent: 'I have read this text and allow sending it. / मैंने यह टेक्स्ट पढ़ लिया है और भेजने की अनुमति देता/देती हूँ।' })),
       sendBtn, msg),
@@ -67,7 +67,7 @@
       const r = await fetch('/report/info?note=' + encodeURIComponent(note.value));
       const j = await r.json();
       diag.value = j.diagnostics; issueA.href = j.issue_url;
-      dlA.href = '/report/download?note=' + encodeURIComponent(note.value); dlA.download = 'neonclipping-diagnostics.txt';
+      dlA.href = '/report/download?note=' + encodeURIComponent(note.value); dlA.download = 'clipping-yogi-diagnostics.txt';
       canSend = !!j.can_send;
       if (!canSend) msg.textContent = 'Direct sending is not set up in this version. Use option 1 or 2. / इस वर्शन में सीधा भेजना चालू नहीं है, विकल्प 1 या 2 चुनें।';
       sendBtn.disabled = !(consent.checked && canSend);

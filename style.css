@@ -134,7 +134,8 @@ details.panel>summary{cursor:pointer;list-style:none;font-size:16px}details.pane
 .preview-side{position:sticky;top:12px;align-self:start}
 @media(max-width:760px){.srcq-inline{min-width:100%}.preview-side{position:static}}
 
-.side-report{display:block;width:100%;margin:12px 0 0;padding:10px 12px;border:1px solid var(--pink);background:#241632;color:var(--white);border-radius:10px;font:700 13px 'DM Sans',sans-serif;text-align:left;cursor:pointer}
+.side-report{display:none!important}
+#rp-btn, #side-version, .side-toggle, #supporters{display:none!important}
 .side-report small{display:block;font-weight:400;font-size:10px;color:var(--muted);margin-top:2px}
 .side-report:hover,.rep:hover{background:#34204a}
 .rep{padding:8px 14px;border:1px solid var(--pink);background:transparent;color:var(--white);border-radius:999px;font:700 13px 'DM Sans',sans-serif;cursor:pointer}
@@ -167,7 +168,7 @@ details.lite{margin:10px 0;padding:8px 12px;border:1px solid #3c314b;border-radi
 details.lite summary{cursor:pointer}
 details.lite summary small{color:var(--muted);margin-left:6px}
 
-.readiness{display:flex;flex-wrap:wrap;gap:8px 14px;margin:0 0 12px;padding:8px 14px;border:1px solid #30263e;border-radius:10px;background:#0f0b17;font-size:12px;color:var(--muted)}
+.readiness{display:none!important}
 .readiness .rd{display:inline-flex;gap:5px;align-items:center;cursor:default}
 .readiness .rd b{font-weight:700}
 .readiness .ok b{color:#d4fb58}

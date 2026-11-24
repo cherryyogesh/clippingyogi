@@ -4,7 +4,7 @@ let rectEdited=false,layoutClicked=false,layoutSpecs={},editingClip=null,layoutL
 let rect={cam:{x:0,y:0,w:.25,h:.3},game:{x:.25,y:0,w:.75,h:1}};
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const status=t=>$('status').textContent=t;
-async function request(path,body){let response;try{response=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});}catch(e){throw Error('Cannot reach the NeonClipping app. Its window was probably closed or it stopped. Start NeonClipping again from the desktop shortcut and try once more.');}const data=await response.json();if(!response.ok)throw Error(data.detail||'Request failed');return data;}
+async function request(path,body){let response;try{response=await fetch(path,body===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});}catch(e){throw Error('Cannot reach the Clipping Yogi app. Its window was probably closed or it stopped. Start Clipping Yogi again from the desktop shortcut and try once more.');}const data=await response.json();if(!response.ok)throw Error(data.detail||'Request failed');return data;}
 function signature(){return [id,Number($('start').value),Number($('end').value),$('language').value].join(':');}
 function clearWords(){words=null;wordRange='';$('words').replaceChildren();}
 function setRange(start,end){$('start').value=start;$('end').value=end;clearWords();}
@@ -73,7 +73,7 @@ function campaignButton(game, tags = []) {
   button.textContent = 'Submit to a campaign';
   return button;
 }
-async function refreshLibrary(){const clips=await request('/library');$('library-count').textContent=clips.length;const host=$('library');host.replaceChildren();if(!clips.length){const empty=document.createElement('div');empty.className='empty-library';empty.textContent='Your first clip belongs here. Export a moment to start your library.';host.append(empty);}for(const clip of clips){const card=document.createElement('article');card.className='clip-card';const video=document.createElement('video');video.src='/media/'+clip.id;video.controls=true;lazyVideo(video);const title=document.createElement('h3');title.textContent=clip.title;const meta=document.createElement('p');meta.textContent=(clip.meta.duration||0).toFixed(1)+' seconds · '+(clip.settings.layout||'stack')+' · '+new Date(clip.created*1000).toLocaleDateString();const links=document.createElement('div');links.className='card-links';const download=document.createElement('a');download.href='/media/'+clip.id;download.download='neonclipping-'+clip.id+'.mp4';download.textContent='↓ MP4';links.append(download);if(clip.srt){const sub=document.createElement('a');sub.href='/text/'+clip.id+'/srt';sub.textContent='↓ SRT';links.append(sub);}const edit=document.createElement('button');edit.textContent='Edit clip';edit.onclick=()=>openSavedClip(clip.id).catch(e=>status(e.message));links.append(edit,campaignButton(clip.settings.game_name,clip.settings.hashtags));card.append(video,title,meta,links);appendVisualReview(card,clip.settings.visual_review);if(clip.settings.features)liveStars(card,clip.id);host.append(card);}}
+async function refreshLibrary(){const clips=await request('/library');$('library-count').textContent=clips.length;const host=$('library');host.replaceChildren();if(!clips.length){const empty=document.createElement('div');empty.className='empty-library';empty.textContent='Your first clip belongs here. Export a moment to start your library.';host.append(empty);}for(const clip of clips){const card=document.createElement('article');card.className='clip-card';const video=document.createElement('video');video.src='/media/'+clip.id;video.controls=true;lazyVideo(video);const title=document.createElement('h3');title.textContent=clip.title;const meta=document.createElement('p');meta.textContent=(clip.meta.duration||0).toFixed(1)+' seconds · '+(clip.settings.layout||'stack')+' · '+new Date(clip.created*1000).toLocaleDateString();const links=document.createElement('div');links.className='card-links';const download=document.createElement('a');download.href='/media/'+clip.id;download.download='clipping-yogi-'+clip.id+'.mp4';download.textContent='↓ MP4';links.append(download);if(clip.srt){const sub=document.createElement('a');sub.href='/text/'+clip.id+'/srt';sub.textContent='↓ SRT';links.append(sub);}const edit=document.createElement('button');edit.textContent='Edit clip';edit.onclick=()=>openSavedClip(clip.id).catch(e=>status(e.message));links.append(edit,campaignButton(clip.settings.game_name,clip.settings.hashtags));card.append(video,title,meta,links);appendVisualReview(card,clip.settings.visual_review);if(clip.settings.features)liveStars(card,clip.id);host.append(card);}}
 document.querySelectorAll('[data-view]').forEach(button => {
   button.onclick = () => {
     const view = button.dataset.view;
@@ -202,13 +202,13 @@ async function showMake(resumeId){const url=$('url').value.trim();if(!resumeId&&
   const shown=new Set();
   for(;;){const s=await request('/make/'+job);$('make-status').textContent=(s.stage||s.status)+' · '+Math.round((s.progress||0)*100)+'%';$('make-progress').style.width=Math.max(2,(s.progress||0)*100)+'%';$('make-steps').innerHTML=makeStepsMarkup(s.phase);
    (s.clips||[]).forEach(c=>{if(shown.has(c.file))return;shown.add(c.file);const d=document.createElement('div');d.className='mk';d.dataset.file=c.file;d.dataset.review=clipReady(c)?'ready':'review';
-    if(c.error){d.textContent='Failed: '+c.error.slice(0,120);}else{const vid=document.createElement('video');vid.src='/media/'+c.file;vid.controls=true;vid.preload='metadata';const t=document.createElement('b');t.textContent=c.title;const m=document.createElement('small');m.textContent=Math.round(c.start)+'–'+Math.round(c.end)+'s · score '+c.score+(c.hook?' · "'+c.hook+'"':'');const a=document.createElement('a');a.href='/media/'+c.file;a.download='neonclipping-'+c.file+'.mp4';a.textContent='Download MP4';const rs=document.createElement('small');rs.textContent=[c.reason,c.review_reason].filter(Boolean).join(' · ');const vb=document.createElement('div');vb.className='viral';const ax=c.axes||{};const fmt=v=>v==null?'–':v;vb.title='Viral score is a heuristic: loudness, shouting, what is said, on-screen action and a local AI read. Your star ratings tune it.';vb.innerHTML='<b>'+(clipReady(c)?'Ready':'Review')+' · '+(c.viral??c.score??'—')+'</b>';
+    if(c.error){d.textContent='Failed: '+c.error.slice(0,120);}else{const vid=document.createElement('video');vid.src='/media/'+c.file;vid.controls=true;vid.preload='metadata';const t=document.createElement('b');t.textContent=c.title;const m=document.createElement('small');m.textContent=Math.round(c.start)+'–'+Math.round(c.end)+'s · score '+c.score+(c.hook?' · "'+c.hook+'"':'');const a=document.createElement('a');a.href='/media/'+c.file;a.download='clipping-yogi-'+c.file+'.mp4';a.textContent='Download MP4';const rs=document.createElement('small');rs.textContent=[c.reason,c.review_reason].filter(Boolean).join(' · ');const vb=document.createElement('div');vb.className='viral';const ax=c.axes||{};const fmt=v=>v==null?'–':v;vb.title='Viral score is a heuristic: loudness, shouting, what is said, on-screen action and a local AI read. Your star ratings tune it.';vb.innerHTML='<b>'+(clipReady(c)?'Ready':'Review')+' · '+(c.viral??c.score??'—')+'</b>';
     const metrics=document.createElement('div');
-    metrics.innerHTML=[['Energy',ax.energy],['Action',ax.action],['Words',ax.words],['AI',ax.ai]].map(([label,value])=>'<div class="result-metric"><b>'+label+'</b><span><i style="width:'+Math.max(0,Math.min(100,Number(value)||0))+'%"></i></span><small>'+fmt(value)+'</small></div>').join('');const stars=document.createElement('div');stars.className='stars';stars.title='Rate this clip: it teaches NeonClipping what a good clip is';
+    metrics.innerHTML=[['Energy',ax.energy],['Action',ax.action],['Words',ax.words],['AI',ax.ai]].map(([label,value])=>'<div class="result-metric"><b>'+label+'</b><span><i style="width:'+Math.max(0,Math.min(100,Number(value)||0))+'%"></i></span><small>'+fmt(value)+'</small></div>').join('');const stars=document.createElement('div');stars.className='stars';stars.title='Rate this clip: it teaches Clipping Yogi what a good clip is';
     for(let n=1;n<=5;n++){const sb=document.createElement('button');sb.textContent='★';sb.setAttribute('aria-label','Rate '+n+' star'+(n===1?'':'s'));sb.onclick=async()=>{try{const r=await request('/feedback',{file:c.file,rating:n});[...stars.children].forEach((x,i)=>x.classList.toggle('on',i<n));fb.textContent=ratingMessage(r);}catch(e){fb.textContent=e.message;}};stars.append(sb);}
     const fb=document.createElement('small');fb.className='fb';fb.textContent='Rate this clip ↑';const edit=document.createElement('button');edit.textContent='Edit clip';edit.onclick=()=>openSavedClip(d.dataset.file).catch(e=>status(e.message));d.append(vid,t,vb,metrics,m,rs,a,edit,campaignButton(s.game,c.hashtags),stars,fb);}
     appendVisualReview(d,c.visual_review);$('make-grid').append(d);});
-   if(s.status==='error')throw Error(s.error);if(s.status==='done'){showResultsOverview(s,job);if(!(s.clips||[]).length){$('make-status').textContent=s.stage||'No moments matched. Broaden your filters and try again.';break;}$('make-status').textContent='Done · '+(s.clips||[]).length+' clips in '+s.elapsed_seconds+'s · also in My clips ('+(s.engine||'')+')';if(!$('make-results').querySelector('.star-ask')){const q=document.createElement('div');q.className='star-ask';q.innerHTML='Free and open-source. If these clips saved you time, <a href="https://github.com/iamajmeena/neonclipping" target="_blank" rel="noopener">★ star NeonClipping on GitHub</a> and follow <a href="https://www.instagram.com/iamajmeena/" target="_blank" rel="noopener">@iamajmeena</a> for more tools.';$('make-results').append(q);}break;}
+   if(s.status==='error')throw Error(s.error);if(s.status==='done'){showResultsOverview(s,job);if(!(s.clips||[]).length){$('make-status').textContent=s.stage||'No moments matched. Broaden your filters and try again.';break;}$('make-status').textContent='Done · '+(s.clips||[]).length+' clips in '+s.elapsed_seconds+'s · also in My clips ('+(s.engine||'')+')';if(!$('make-results').querySelector('.star-ask')){const q=document.createElement('div');q.className='star-ask';q.innerHTML='Free and open-source. If these clips saved you time, <a href="https://github.com/iamajmeena/neonclipping" target="_blank" rel="noopener">★ star Clipping Yogi on GitHub</a> and follow <a href="https://www.instagram.com/iamajmeena/" target="_blank" rel="noopener">@iamajmeena</a> for more tools.';$('make-results').append(q);}break;}
    await sleep(1000);}}catch(e){$('make-status').textContent=e.message;}finally{b.disabled=false;refreshResume();}}
 $('make').onclick=()=>showMake(null);
 async function refreshResume(){const job=localStorage.getItem('neon-last-make');const button=$('resume-make');button.hidden=true;if(!job)return;try{const row=await request('/make/'+job);button.hidden=!row.can_resume;button.onclick=()=>showMake(job);}catch{}}
@@ -220,9 +220,9 @@ let preset=null;
 function applyPreset(k,save=true){preset=k;document.querySelectorAll('[data-preset]').forEach(b=>b.classList.toggle('on',b.dataset.preset===k));
  if(k==='none'){$('preset-note').textContent='Blurred full frame, no separate facecam.';document.querySelector('[data-layout=blur]')?.click();}
  else{rectEdited=true;if($('cam-auto'))$('cam-auto').checked=false;rect={cam:{...PRESETS[k].cam},game:{...PRESETS[k].game}};$('preset-note').textContent='Preset set. Fine-tune by drawing in step 03 if your cam sits a bit differently.';document.querySelector('[data-layout=stack]')?.click();}
- if(save)try{localStorage.setItem('neonclipping-preset',k);}catch(e){}}
+ if(save)try{localStorage.setItem('clipping-yogi-preset',k);}catch(e){}}
 document.querySelectorAll('[data-preset]').forEach(b=>b.onclick=()=>applyPreset(b.dataset.preset));
-try{const k=localStorage.getItem('neonclipping-preset');if(k)applyPreset(k,false);}catch(e){}
+try{const k=localStorage.getItem('clipping-yogi-preset');if(k)applyPreset(k,false);}catch(e){}
 
 // Make clips uses what the user set up: preset or drawn boxes -> that layout; else the layout they clicked; else blurred full frame.
 function makeLayout(){return (layoutClicked||rectEdited)?layout:'blur';}
@@ -263,7 +263,7 @@ async function openSavedClip(file){
 function swapEditedCards(edited){
  for(const e of edited||[]){const olds=[e.previous,...(e.was||[])];const card=[...document.querySelectorAll('.mk')].find(x=>olds.includes(x.dataset.file));if(!card)continue;
   card.dataset.file=e.file;const v=card.querySelector('video');if(v){v.src='/media/'+e.file;v.load();}
-  const dl=card.querySelector('a[download]');if(dl){dl.href='/media/'+e.file;dl.download='neonclipping-'+e.file+'.mp4';}
+  const dl=card.querySelector('a[download]');if(dl){dl.href='/media/'+e.file;dl.download='clipping-yogi-'+e.file+'.mp4';}
   const t=card.querySelector('b');if(t&&e.title&&!t.parentElement.classList.contains('viral'))t.textContent=e.title;}
 }
 async function applySavedEdit(scope){
@@ -287,8 +287,8 @@ $('apply-video').onclick=()=>applySavedEdit('video').catch(e=>status(e.message))
 $('edit-top').addEventListener('input',()=>{$('top').value=$('edit-top').value;loadNativeLayouts().catch(e=>status(e.message));});
 
 // Optional donate button: only shown when donate.json (or env vars) has https links.
-(async()=>{try{const d=await request('/donate');if(!d.razorpay&&!d.paypal)return;if(d.razorpay){$('don-rzp').href=d.razorpay;$('don-rzp').hidden=false;}if(d.paypal){$('don-pp').href=d.paypal;$('don-pp').hidden=false;}
- $('donate').hidden=false;$('support-bar').hidden=false;$('donate').onclick=$('donate-bar').onclick=()=>$('donate-dialog').showModal();$('don-close').onclick=()=>$('donate-dialog').close();}catch(e){}})();
+(async()=>{try{const d=await request('/donate');if(!d.razorpay&&!d.paypal)return;if(d.razorpay&&$('don-rzp')){$('don-rzp').href=d.razorpay;$('don-rzp').hidden=false;}if(d.paypal&&$('don-pp')){$('don-pp').href=d.paypal;$('don-pp').hidden=false;}
+ if($('donate')){$('donate').hidden=false;if($('donate-dialog'))$('donate').onclick=()=>$('donate-dialog').showModal();}if($('support-bar')){$('support-bar').hidden=false;if($('donate-bar')&&$('donate-dialog'))$('donate-bar').onclick=()=>$('donate-dialog').showModal();}if($('don-close')&&$('donate-dialog'))$('don-close').onclick=()=>$('donate-dialog').close();}catch(e){}})();
 
 // ---- Live clipping (record + chat spikes + backdated clips)
 let liveId=null,liveTimer=null;const liveShown=new Set();
@@ -301,7 +301,7 @@ function liveCard(c){const d=document.createElement('div');d.className='mk';d.da
  const t=document.createElement('b');t.textContent=c.title;
  const ax=c.axes||{},f=v=>v==null?'–':v;const vb=document.createElement('div');vb.className='viral';vb.innerHTML='<b>🔥 Viral '+(c.viral??'–')+'</b><span>Chat '+f(ax.chat)+'</span><span>Energy '+f(ax.energy)+'</span><span>Words '+f(ax.words)+'</span><span>AI '+f(ax.ai)+'</span>';
  const m=document.createElement('small');m.textContent=(c.why||'')+(c.hook?' · "'+c.hook+'"':'');
- const a=document.createElement('a');a.href='/media/'+c.file;a.download='neonclipping-live-'+c.file+'.mp4';a.textContent='Download MP4';
+ const a=document.createElement('a');a.href='/media/'+c.file;a.download='clipping-yogi-live-'+c.file+'.mp4';a.textContent='Download MP4';
  const edit=document.createElement('button');edit.textContent='Edit clip';edit.onclick=()=>openSavedClip(d.dataset.file).catch(e=>status(e.message));
  d.append(vid,t,vb,m,a,edit);liveStars(d,c.file);return d;}
 function liveStatus(s){const mm=String(Math.floor((s.elapsed||0)/60)).padStart(2,'0')+':'+String((s.elapsed||0)%60).padStart(2,'0');
@@ -322,7 +322,7 @@ $('live-stop').onclick=async()=>{if(!liveId)return;try{await request('/live/'+li
 // Re-attach to a live session that is already running (after a page reload) so Stop always works.
 (async()=>{try{const r=await request('/live-active');if(r.live){liveId=r.live;$('live-box').hidden=false;$('live-start').disabled=true;liveTimer=setInterval(livePoll,2000);livePoll();}}catch(e){}})();
 
-// ---- Creators: a list of streamers that NeonClipping watches and clips automatically when they go live.
+// ---- Creators: a list of streamers that Clipping Yogi watches and clips automatically when they go live.
 const creatorOpts=()=>({cam_auto:$('cam-auto')?.checked??!rectEdited,layout:makeLayout(),aspect:$('aspect').value,resolution:Number($('resolution').value),fps:Number($('fps').value),cam:rect.cam,game:rect.game,top:Number($('top').value)/100,caption_style:style,language:$('language').value});
 let creatorSig='';const creatorFeedOpen=new Set();
 function attachLive(id){if(liveId===id)return;liveId=id;liveShown.clear();$('live-grid').replaceChildren();$('live-box').hidden=false;$('live-start').disabled=true;clearInterval(liveTimer);liveTimer=setInterval(livePoll,2000);livePoll();}
@@ -330,7 +330,7 @@ function agoText(t){if(!t)return 'never';const m=Math.round((Date.now()/1000-t)/
 function miniCard(clip){const d=document.createElement('div');d.className='mk';d.dataset.file=clip.id;
  const v=document.createElement('video');v.src='/media/'+clip.id;v.controls=true;lazyVideo(v);
  const t=document.createElement('b');t.textContent=clip.title;const m=document.createElement('small');m.textContent=(clip.meta.duration||0).toFixed(0)+' s · '+new Date(clip.created*1000).toLocaleString();
- const a=document.createElement('a');a.href='/media/'+clip.id;a.download='neonclipping-'+clip.id+'.mp4';a.textContent='Download MP4';
+ const a=document.createElement('a');a.href='/media/'+clip.id;a.download='clipping-yogi-'+clip.id+'.mp4';a.textContent='Download MP4';
  const e=document.createElement('button');e.textContent='Edit clip';e.onclick=()=>openSavedClip(d.dataset.file).catch(x=>status(x.message));
  d.append(v,t,m,a,e);return d;}
 async function fillCreatorFeed(id,grid){const lib=await request('/library');grid.replaceChildren();const mine=lib.filter(c=>(c.settings||{}).creator===id);
@@ -350,7 +350,7 @@ async function loadCreators(force){
  const act=await request('/live-active').catch(()=>({}));if(act.live&&!liveId)attachLive(act.live);
  if(!force&&sig===creatorSig)return;creatorSig=sig;
  const host=$('creator-list');host.replaceChildren();
- if(!r.creators.length){const p=document.createElement('p');p.className='muted';p.textContent='No creators yet. Add a streamer above and NeonClipping will clip them whenever they go live.';host.append(p);return;}
+ if(!r.creators.length){const p=document.createElement('p');p.className='muted';p.textContent='No creators yet. Add a streamer above and Clipping Yogi will clip them whenever they go live.';host.append(p);return;}
  for(const c of r.creators){
   const row=document.createElement('div');row.className='creator-row';
   const top=document.createElement('div');top.className='creator-top';
@@ -412,7 +412,7 @@ for(const key of ['aspect','resolution'])$(key).addEventListener('change',()=>lo
 $('timing-editor').onchange=renderWords;
 $('shift-captions').onclick=()=>{try{const current=collectWords();if(!current?.length)throw Error('Generate or import subtitles first.');const offset=Number($('caption-shift').value);if(!Number.isFinite(offset))throw Error('Choose a valid shift.');const shifted=current.map(w=>({...w,start:w.start+offset,end:w.end+offset}));const duration=Number($('end').value)-Number($('start').value);if(shifted.some(w=>w.start<0||w.end>duration+.1))throw Error('That shift places words outside the clip. Choose a smaller shift.');words=shifted;renderWords();status('Subtitle times shifted by '+offset+' seconds. Apply or export to update the video.');}catch(e){status(e.message);}};
 
-fetch('/healthz').then(r=>r.json()).then(h=>{if(h&&h.ffmpeg===false){const m='FFmpeg is not installed on this computer, so clips cannot be made. Re-run NeonClipping-Setup.bat (it installs FFmpeg), or install it with: winget install Gyan.FFmpeg';status(m);const n=document.getElementById("link-status");if(n)n.textContent=m;}}).catch(()=>{});
+fetch('/healthz').then(r=>r.json()).then(h=>{if(h&&h.ffmpeg===false){const m='FFmpeg is not installed on this computer, so clips cannot be made. Re-run clipping yogi.bat (it installs FFmpeg), or install it with: winget install Gyan.FFmpeg';status(m);const n=document.getElementById("link-status");if(n)n.textContent=m;}}).catch(()=>{});
 
 ['report-side'].forEach(i=>{const b=document.getElementById(i);if(b)b.onclick=()=>{const r=document.getElementById('rp-btn');if(r)r.click();else status('Report tool is still loading, try again in a moment.');};});
 
@@ -422,7 +422,7 @@ fetch('/healthz').then(r=>r.json()).then(h=>{if(h&&h.ffmpeg===false){const m='FF
 (async()=>{
  const bar=$('update-bar');if(!bar)return;
  let timer=null;
- const waitBack=async()=>{for(let i=0;i<120;i++){await new Promise(r=>setTimeout(r,2500));try{const h=await fetch('/healthz');if(h.ok){location.reload();return;}}catch(e){}}$('update-text').textContent='The app did not come back. Start NeonClipping again from the desktop shortcut.';};
+ const waitBack=async()=>{for(let i=0;i<120;i++){await new Promise(r=>setTimeout(r,2500));try{const h=await fetch('/healthz');if(h.ok){location.reload();return;}}catch(e){}}$('update-text').textContent='The app did not come back. Start Clipping Yogi again from the desktop shortcut.';};
  const run=async()=>{clearInterval(timer);$('update-now').disabled=true;$('update-cancel').hidden=true;$('update-text').textContent='Updating... keep this window open. The page reloads by itself.';
   try{await request('/update/apply',{});}catch(e){$('update-text').textContent=e.message;$('update-now').disabled=false;return;}
   for(let i=0;i<400;i++){await new Promise(r=>setTimeout(r,1500));try{const s=await (await fetch('/update/status')).json();if(s.error){$('update-text').textContent='Update failed: '+s.error;$('update-now').disabled=false;return;}if(s.stage)$('update-text').textContent=s.stage;}catch(e){break;}}
@@ -431,13 +431,13 @@ fetch('/healthz').then(r=>r.json()).then(h=>{if(h&&h.ffmpeg===false){const m='FF
   const s=await request('/update/status');
   if(!s.available)return;
   bar.hidden=false;
-  $('update-text').innerHTML='<b>A new version of NeonClipping is ready.</b> It has the latest fixes and features.';
+  $('update-text').innerHTML='<b>A new version of Clipping Yogi is ready.</b> It has the latest fixes and features.';
   $('update-now').onclick=run;
   $('update-auto').checked=localStorage.getItem('nc_auto_update')!=='0';
   $('update-auto').onchange=()=>localStorage.setItem('nc_auto_update',$('update-auto').checked?'1':'0');
   if($('update-auto').checked&&!s.busy){let n=8;$('update-cancel').hidden=false;
-   $('update-cancel').onclick=()=>{clearInterval(timer);$('update-cancel').hidden=true;$('update-auto').checked=false;localStorage.setItem('nc_auto_update','0');$('update-text').innerHTML='<b>A new version of NeonClipping is ready.</b> Press Update now when you are ready.';};
-   timer=setInterval(()=>{n--;$('update-text').innerHTML='<b>Updating NeonClipping in '+n+' s</b> (new fixes and features).';if(n<=0)run();},1000);}
+   $('update-cancel').onclick=()=>{clearInterval(timer);$('update-cancel').hidden=true;$('update-auto').checked=false;localStorage.setItem('nc_auto_update','0');$('update-text').innerHTML='<b>A new version of Clipping Yogi is ready.</b> Press Update now when you are ready.';};
+   timer=setInterval(()=>{n--;$('update-text').innerHTML='<b>Updating Clipping Yogi in '+n+' s</b> (new fixes and features).';if(n<=0)run();},1000);}
  }catch(e){}
 })();
 
@@ -452,7 +452,7 @@ const camReset=document.getElementById('cam-reset');if(camReset)camReset.onclick
 })();
 
 // "Cover image" link next to every MP4 download link (cards, library, live clips).
-(()=>{const add=a=>{try{const m=(a.getAttribute('href')||'').match(/^\/media\/([A-Za-z0-9]+)$/);if(!m||!/MP4/.test(a.textContent||'')||a.dataset.cover)return;a.dataset.cover='1';const c=document.createElement('a');c.href='/cover/'+m[1];c.download='neonclipping-cover-'+m[1]+'.jpg';c.textContent='Cover image';c.className=a.className;c.style.marginLeft='10px';a.after(c);}catch(e){}};
+(()=>{const add=a=>{try{const m=(a.getAttribute('href')||'').match(/^\/media\/([A-Za-z0-9]+)$/);if(!m||!/MP4/.test(a.textContent||'')||a.dataset.cover)return;a.dataset.cover='1';const c=document.createElement('a');c.href='/cover/'+m[1];c.download='clipping-yogi-cover-'+m[1]+'.jpg';c.textContent='Cover image';c.className=a.className;c.style.marginLeft='10px';a.after(c);}catch(e){}};
  const scan=r=>{if(r.nodeType!==1)return;if(r.tagName==='A')add(r);r.querySelectorAll&&r.querySelectorAll('a[href^="/media/"]').forEach(add);};
  new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(scan))).observe(document.body,{childList:true,subtree:true});scan(document.body);})();
 

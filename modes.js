@@ -53,14 +53,14 @@
     if (tab === 'shortcut') shortcutPane(); else keyDialog();
   }
   function shortcutPane() {
-    $('st-body').innerHTML = '<p class="muted">Come back to NeonClipping in one click. The shortcut opens it if it is running and starts it if not.</p>' +
+    $('st-body').innerHTML = '<p class="muted">Come back to Clipping Yogi in one click. The shortcut opens it if it is running and starts it if not.</p>' +
       '<div class="kd-grid"><button type="button" class="kd-p" data-sc="desk"><b>🖥 Desktop + Start Menu</b><small>An icon on your Desktop and in the Start Menu (Windows), or on the Desktop (Mac / Linux).</small></button>' +
       '<button type="button" class="kd-p" data-sc="app"><b>⬇ Install as an app</b><small>Its own window and taskbar icon from Chrome or Edge, no browser tabs.</small></button></div><p class="muted" id="sc-note"></p>';
   }
   async function shortcutAction(kind) {
     const note = t => { const n = $('sc-note'); if (n) n.innerHTML = t; };
     if (kind === 'desk') { note('Making it…'); try { const r = await request('/shortcut', {}); note(r.made && r.made.length ? '✓ ' + esc(r.note) : '✗ ' + esc(r.note)); } catch (e) { note('✗ ' + esc(e.message)); } return; }
-    if (installPrompt) { installPrompt.prompt(); const c = await installPrompt.userChoice.catch(() => ({})); note(c.outcome === 'accepted' ? '✓ Installed. Find NeonClipping in your Start Menu / apps.' : 'Not installed.'); installPrompt = null; return; }
+    if (installPrompt) { installPrompt.prompt(); const c = await installPrompt.userChoice.catch(() => ({})); note(c.outcome === 'accepted' ? '✓ Installed. Find Clipping Yogi in your Start Menu / apps.' : 'Not installed.'); installPrompt = null; return; }
     note('In Chrome: menu <b>⋮</b> → <b>Cast, save and share</b> → <b>Install page as app</b>. In Edge: menu <b>…</b> → <b>Apps</b> → <b>Install this site as an app</b>.');
   }
   function addSidebarItem() {
