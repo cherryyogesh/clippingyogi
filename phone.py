@@ -34,6 +34,18 @@ def is_local(host):
     return host in LOCAL or str(host).startswith('127.')
 
 
+def is_cloud():
+    return bool(
+        os.environ.get('RENDER') or
+        os.environ.get('DOCKER') == '1' or
+        os.environ.get('PORT') or
+        os.environ.get('RAILWAY_ENVIRONMENT') or
+        os.environ.get('FLY_APP_NAME') or
+        os.environ.get('KOYEB_APP_NAME') or
+        os.environ.get('CLIPPING_YOGI_CLOUD') == '1'
+    )
+
+
 def allowed(path):
     return any(path == p or path.startswith(p + '/') for p in ALLOW)
 
@@ -99,7 +111,7 @@ def attach(app, data, root):
     @app.middleware('http')
     async def gate(request: Request, call_next):
         host = request.client.host if request.client else ''
-        if is_local(host):
+        if is_local(host) or is_cloud():
             return await call_next(request)
         path = request.url.path
         if not lan_enabled():

@@ -43,6 +43,17 @@ app.add_middleware(
  allow_methods=["*"],
  allow_headers=["*"],
 )
+@app.middleware("http")
+async def add_pna_and_cors_headers(request, call_next):
+    if request.method == "OPTIONS":
+        response = await call_next(request)
+        if request.headers.get("access-control-request-private-network"):
+            response.headers["Access-Control-Allow-Private-Network"] = "true"
+        return response
+    response = await call_next(request)
+    if request.headers.get("access-control-request-private-network"):
+        response.headers["Access-Control-Allow-Private-Network"] = "true"
+    return response
 state={}
 import watchdog;watchdog.start(state,report.log_error)      # flags a job that has not moved for 15 minutes and logs where it waits
 def probe(p):
