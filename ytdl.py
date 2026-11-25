@@ -86,7 +86,7 @@ def variants(base):
     if browser:
         out.append(({**base, 'cookiesfrombrowser': (browser,)}, False))
     out.append((dict(base), True))
-    for clients in (['tv', 'web_safari'], ['android'], ['ios'], ['mweb']):
+    for clients in (['android'], ['tv_embedded'], ['tv', 'web_safari'], ['tv']):
         out.append(({**base, 'extractor_args': {'youtube': {'player_client': clients}}}, False))
     return out
 

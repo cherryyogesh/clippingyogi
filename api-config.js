@@ -140,8 +140,10 @@
         : '⚠️ <b>Backend not connected:</b> Enter your live backend URL to process videos:';
       
       bar.innerHTML = '<div style="display:flex;align-items:center;gap:6px;"><span>🔗</span> <div>' + statusText + '</div></div>' +
-        '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
-        '<input id="backend-url-input" type="url" placeholder="https://clippingyogi-1.onrender.com or http://localhost:8770" value="' + (base || '') + '" style="background:#0c0814;border:1px solid #3c2a55;color:#fff;border-radius:6px;padding:5px 10px;font:12px monospace;width:290px;">' +
+        '<div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">' +
+        '<button id="backend-preset-render" type="button" style="background:#2a1f3d;color:#58e8f7;border:1px solid #3c2a55;border-radius:6px;padding:5px 8px;font:11px system-ui;cursor:pointer;" title="Connect to Render cloud">☁️ Render</button>' +
+        '<button id="backend-preset-local" type="button" style="background:#2a1f3d;color:#d4fb58;border:1px solid #3c2a55;border-radius:6px;padding:5px 8px;font:11px system-ui;cursor:pointer;" title="Connect to local desktop server">🖥️ Local (8770)</button>' +
+        '<input id="backend-url-input" type="url" placeholder="https://...onrender.com or http://localhost:8770" value="' + (base || '') + '" style="background:#0c0814;border:1px solid #3c2a55;color:#fff;border-radius:6px;padding:5px 10px;font:12px monospace;width:250px;">' +
         '<button id="backend-url-save" style="background:#ff4ba5;color:#fff;border:0;border-radius:6px;padding:5px 12px;font:700 12px system-ui;cursor:pointer;">' + (base ? 'Update' : 'Connect') + '</button>' +
         (base ? '<button id="backend-url-clear" style="background:transparent;color:#a99db7;border:1px solid #3c2a55;border-radius:6px;padding:5px 10px;font:12px system-ui;cursor:pointer;">Disconnect</button>' : '') +
         '<button id="backend-help-btn" style="background:transparent;color:#58e8f7;border:1px solid #58e8f7;border-radius:6px;padding:5px 8px;font:12px system-ui;cursor:pointer;" title="How to connect backend">Help ℹ️</button>' +
@@ -169,6 +171,11 @@
       const helpClose = document.getElementById('backend-help-close');
       if (helpBtn) helpBtn.onclick = function () { helpModal.style.display = helpModal.style.display === 'none' ? 'block' : 'none'; };
       if (helpClose) helpClose.onclick = function () { helpModal.style.display = 'none'; };
+
+      const btnLocal = document.getElementById('backend-preset-local');
+      if (btnLocal) btnLocal.onclick = function () { window.setApiBase('http://localhost:8770'); };
+      const btnRender = document.getElementById('backend-preset-render');
+      if (btnRender) btnRender.onclick = function () { window.setApiBase(DEFAULT_BACKEND); };
 
       document.getElementById('backend-url-save').onclick = async function () {
         const val = document.getElementById('backend-url-input').value.trim();
