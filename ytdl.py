@@ -61,7 +61,28 @@ def _config():
     except (OSError, ValueError):
         pass
     browser = (os.environ.get('NEONCLIPPING_COOKIES_BROWSER') or saved.get('cookies_browser') or '').strip().lower()
-    cookie_file = os.environ.get('NEONCLIPPING_COOKIES_FILE') or saved.get('cookies_file') or str(DATA / 'youtube_cookies.txt')
+    cookie_file = os.environ.get('NEONCLIPPING_COOKIES_FILE') or saved.get('cookies_file')
+    if not cookie_file:
+        for candidate in (
+            DATA / 'youtube_cookies.txt',
+            Path('/etc/secrets/youtube_cookies.txt'),
+            ROOT / 'youtube_cookies.txt',
+        ):
+            if candidate.is_file():
+                cookie_file = str(candidate)
+                break
+        else:
+            cookie_file = str(DATA / 'youtube_cookies.txt')
+
+    if os.environ.get('YOUTUBE_COOKIES') and not Path(cookie_file).is_file():
+        try:
+            DATA.mkdir(parents=True, exist_ok=True)
+            target = DATA / 'youtube_cookies.txt'
+            target.write_text(os.environ['YOUTUBE_COOKIES'].strip(), encoding='utf-8')
+            cookie_file = str(target)
+        except OSError:
+            pass
+
     return browser, cookie_file
 
 def js_runtimes():
@@ -86,7 +107,7 @@ def variants(base):
     if browser:
         out.append(({**base, 'cookiesfrombrowser': (browser,)}, False))
     out.append((dict(base), True))
-    for clients in (['android'], ['tv_embedded'], ['tv', 'web_safari'], ['tv']):
+    for clients in (['tv', 'web_safari'], ['android'], ['tv_embedded'], ['tv']):
         out.append(({**base, 'extractor_args': {'youtube': {'player_client': clients}}}, False))
     return out
 
